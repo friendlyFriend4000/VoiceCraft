@@ -5,6 +5,11 @@
 ### TL;DR
 VoiceCraft is a token infilling neural codec language model, that achieves state-of-the-art performance on both **speech editing** and **zero-shot text-to-speech (TTS)** on in-the-wild data including audiobooks, internet videos, and podcasts.
 
+## TODO
+- [X] gradio port
+- [ ] windows version maybe
+- [ ] support multiple gpus
+- [ ] 
 
 ## Environment setup
 ```bash
