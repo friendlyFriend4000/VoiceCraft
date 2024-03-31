@@ -8,6 +8,7 @@ from data.tokenizer import (
 )
 import whisper
 import os
+import time
 
 audio_fn = ""
 transcript_fn = ""
@@ -35,10 +36,17 @@ def transcribe_btn_click(model_choice, audio_choice, transcribed_text):
     # run MFA to get the alignment
     align_temp = f"{temp_folder}/mfa_alignments"
     os.makedirs(align_temp, exist_ok=True)
-    if (f"{align_temp}/{filename}" == None):
+
+    if os.path.exists(f"{align_temp}/{filename}.csv"):
+        return ""
+    else:
+        print(align_temp + " is None")
         os.system(f"mfa align -j 1 --output_format csv {temp_folder} english_us_arpa english_us_arpa {align_temp}")
+
     # if the above fails, it could be because the audio is too hard for the alignment model, increasing the beam size usually solves the issue
+    # or try a larger model
     # os.system(f"mfa align -j 1 --output_format csv {temp_folder} english_us_arpa english_us_arpa {align_temp} --beam 1000 --retry_beam 2000")
+    print("yes")
     global audio_fn
     audio_fn = f"{temp_folder}/{filename}.wav"
     global transcript_fn
@@ -46,8 +54,7 @@ def transcribe_btn_click(model_choice, audio_choice, transcribed_text):
     global align_fn
     align_fn = f"{align_temp}/{filename}.csv"
 
-    filepath = f"{align_temp}/{filename}.csv"
-    df = pd.read_csv(filepath)
+    df = pd.read_csv(align_fn)
     # Select the first three columns
     df = df.iloc[:, :3]
 

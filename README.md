@@ -9,7 +9,7 @@ VoiceCraft is a token infilling neural codec language model, that achieves state
 - [X] gradio port
 - [ ] windows version maybe
 - [ ] support multiple gpus
-- [ ] 
+- [ ] faster-distil-whisper-large-v3
 
 ## Environment setup
 ```bash
@@ -23,6 +23,7 @@ pip install phonemizer==3.2.1
 pip install torchaudio==2.0.2
 pip install datasets==2.16.0
 pip install torchmetrics==0.11.1
+pip install openai-whisper
 apt-get install ffmpeg # if you don't already have ffmpeg installed
 apt-get install espeak-ng # backend for the phonemizer installed below
 # install MFA for getting forced-alignment, this could take a few minutes
@@ -31,6 +32,8 @@ conda install -c conda-forge montreal-forced-aligner=2.2.17 openfst=1.8.2 kaldi=
 mfa model download dictionary english_us_arpa
 mfa model download acoustic english_us_arpa 
 
+cd ./VoiceCraft
+python start_gradio.py
 
 ```
 
