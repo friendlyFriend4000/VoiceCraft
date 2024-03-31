@@ -117,17 +117,14 @@ def run(seed, stop_repetition, sample_batch_size, left_margin, right_margin, cod
     concated_audio, gen_audio = concated_audio[0].cpu(), gen_audio[0].cpu()
     # logging.info(f"length of the resynthesize orig audio: {orig_audio.shape}")
 
-    print("1")
     output_dir = "./demo/generated_tts"
     os.makedirs(output_dir, exist_ok=True)
     seg_save_fn_gen = f"{output_dir}/{os.path.basename(audio_fn)[:-4]}_gen_seed{seed}.wav"
     seg_save_fn_concat = f"{output_dir}/{os.path.basename(audio_fn)[:-4]}_concat_seed{seed}.wav"
 
-    print("2")
 
     torchaudio.save(seg_save_fn_gen, gen_audio, int(codec_audio_sr))
     torchaudio.save(seg_save_fn_concat, concated_audio, int(codec_audio_sr))
-    print("3")
 
     return [seg_save_fn_concat, seg_save_fn_gen]
 
