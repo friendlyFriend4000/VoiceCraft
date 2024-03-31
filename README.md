@@ -20,7 +20,7 @@ pip install xformers==0.0.20 # this is new
 pip install -e git+https://github.com/facebookresearch/audiocraft.git@c5157b5bf14bf83449c17ea1eeb66c19fb4bc7f0#egg=audiocraft
 pip install tensorboard==2.16.2
 pip install phonemizer==3.2.1
-pip install torchaudio==2.0.2
+pip install torchaudio==2.0.2 #throws error. still works
 pip install datasets==2.16.0
 pip install torchmetrics==0.11.1
 pip install openai-whisper
