@@ -5,88 +5,31 @@
 ### TL;DR
 VoiceCraft is a token infilling neural codec language model, that achieves state-of-the-art performance on both **speech editing** and **zero-shot text-to-speech (TTS)** on in-the-wild data including audiobooks, internet videos, and podcasts.
 
-To clone or edit an unseen voice, VoiceCraft needs only a few seconds of reference.
-
-## News
-:star: 03/28/2024: Model weights are up on HuggingFace🤗 [here](https://huggingface.co/pyp1/VoiceCraft/tree/main)!
-
-## TODO
-- [x] Codebase upload
-- [x] Environment setup
-- [x] Inference demo for speech editing and TTS
-- [x] Training guidance
-- [x] RealEdit dataset and training manifest
-- [x] Model weights (both 330M and 830M, the former seems to be just as good)
-- [ ] Write colab notebooks for better hands-on experience
-- [ ] HuggingFace Spaces demo
-- [ ] Better guidance on training
-
-## How to run TTS inference 
-There are two ways: 
-1. with docker. see [quickstart](#quickstart)
-2. without docker. see [envrionment setup](#environment-setup)
-
-When you are inside the docker image or you have installed all dependencies, Checkout [`inference_tts.ipynb`](./inference_tts.ipynb).
-
-## QuickStart
-:star: To try out TTS inference with VoiceCraft, the best way is using docker. Thank [@ubergarm](https://github.com/ubergarm) and [@jayc88](https://github.com/jay-c88) for making this happen. 
-
-Tested on Linux and Windows and should work with any host with docker installed.
-```bash
-# 1. clone the repo on in a directory on a drive with plenty of free space
-git clone git@github.com:jasonppy/VoiceCraft.git
-cd VoiceCraft
-
-# 2. assumes you have docker installed with nvidia container container-toolkit (windows has this built into the driver)
-# https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/1.13.5/install-guide.html
-# sudo apt-get install -y nvidia-container-toolkit-base || yay -Syu nvidia-container-toolkit || echo etc...
-
-# 3. Try to start an existing container otherwise create a new one passing in all GPUs
-./start-jupyter.sh  # linux
-start-jupyter.bat   # windows
-
-# 4. now open a webpage on the host box to the URL shown at the bottom of:
-docker logs jupyter
-
-# 5. optionally look inside from another terminal
-docker exec -it jupyter /bin/bash
-export USER=(your_linux_username_used_above)
-export HOME=/home/$USER
-sudo apt-get update
-
-# 6. confirm video card(s) are visible inside container
-nvidia-smi
-
-# 7. Now in browser, open inference_tts.ipynb and work through one cell at a time
-echo GOOD LUCK
-```
 
 ## Environment setup
 ```bash
-conda create -n voicecraft python=3.9.16
+conda create -n voicecraft python=3.9.19
 conda activate voicecraft
-
 pip install torch==2.0.1 # this assumes your system is compatible with CUDA 11.7, otherwise checkout https://pytorch.org/get-started/previous-versions/#v201
-apt-get install ffmpeg # if you don't already have ffmpeg installed
+pip install xformers==0.0.20 # this is new
 pip install -e git+https://github.com/facebookresearch/audiocraft.git@c5157b5bf14bf83449c17ea1eeb66c19fb4bc7f0#egg=audiocraft
-apt-get install espeak-ng # backend for the phonemizer installed below
 pip install tensorboard==2.16.2
 pip install phonemizer==3.2.1
 pip install torchaudio==2.0.2
 pip install datasets==2.16.0
 pip install torchmetrics==0.11.1
+apt-get install ffmpeg # if you don't already have ffmpeg installed
+apt-get install espeak-ng # backend for the phonemizer installed below
 # install MFA for getting forced-alignment, this could take a few minutes
 conda install -c conda-forge montreal-forced-aligner=2.2.17 openfst=1.8.2 kaldi=5.5.1068
 # conda install pocl # above gives an warning for installing pocl, not sure if really need this
+mfa model download dictionary english_us_arpa
+mfa model download acoustic english_us_arpa 
 
-# to run ipynb
-conda install -n voicecraft ipykernel --update-deps --force-reinstall
+
 ```
 
 If you have encountered version issues when running things, checkout [environment.yml](./environment.yml) for exact matching.
-
-## Inference Examples
-Checkout [`inference_speech_editing.ipynb`](./inference_speech_editing.ipynb) and [`inference_tts.ipynb`](./inference_tts.ipynb)
 
 ## Training
 To train an VoiceCraft model, you need to prepare the following parts: 
