@@ -44,6 +44,7 @@ def transcribe_btn_click(model_choice, audio_choice, transcribed_text):
         print(align_temp + " is None")
         os.system(f"mfa align -j 1 --output_format csv {temp_folder} english_us_arpa english_us_arpa {align_temp}")
 
+
     # if the above fails, it could be because the audio is too hard for the alignment model, increasing the beam size usually solves the issue
     # or try a larger model
     # os.system(f"mfa align -j 1 --output_format csv {temp_folder} english_us_arpa english_us_arpa {align_temp} --beam 1000 --retry_beam 2000")
@@ -134,7 +135,7 @@ with gr.Blocks() as demo:
         with gr.Column():
             input_audio = gr.Audio(label="Input Audio", type="filepath")
             transcribe_btn_model = gr.Radio(value="base.en", interactive=True, label="what whisper model to download",
-                                            choices=["tiny.en (72MB)", "base.en", "small.en", "medium.en", "large"],
+                                            choices=["tiny.en", "base.en", "small.en", "medium.en", "large"],
                                             info="VRAM usage: tiny.en 1 GB, base.en 1GB, small.en 2GB, medium.en 5GB, large 10GB.")
             transcribed_text = gr.Textbox(label="transcibed text + mfa",
                                           info="write down the transcript for the file, or run whisper model to get the transcript. Takes time to download whisper models on first run")
