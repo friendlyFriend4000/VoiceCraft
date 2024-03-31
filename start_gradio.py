@@ -38,7 +38,7 @@ def transcribe_btn_click(model_choice, audio_choice, transcribed_text):
     os.makedirs(align_temp, exist_ok=True)
 
     if os.path.exists(f"{align_temp}/{filename}.csv"):
-        return ""
+        pass
     else:
         print(align_temp + " is None")
         os.system(f"mfa align -j 1 --output_format csv {temp_folder} english_us_arpa english_us_arpa {align_temp}")
