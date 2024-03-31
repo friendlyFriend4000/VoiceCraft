@@ -39,6 +39,7 @@ def transcribe_btn_click(model_choice, audio_choice, transcribed_text):
 
     if os.path.exists(f"{align_temp}/{filename}.csv"):
         pass
+        print("mfa.cvs file exists already")
     else:
         print(align_temp + " is None")
         os.system(f"mfa align -j 1 --output_format csv {temp_folder} english_us_arpa english_us_arpa {align_temp}")
