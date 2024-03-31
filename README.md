@@ -16,13 +16,13 @@ VoiceCraft is a token infilling neural codec language model, that achieves state
 conda create -n voicecraft python=3.9.19
 conda activate voicecraft
 pip install torch==2.0.1 # this assumes your system is compatible with CUDA 11.7, otherwise checkout https://pytorch.org/get-started/previous-versions/#v201
-pip install xformers==0.0.20 # this is new
 pip install -e git+https://github.com/facebookresearch/audiocraft.git@c5157b5bf14bf83449c17ea1eeb66c19fb4bc7f0#egg=audiocraft
 pip install tensorboard==2.16.2
 pip install phonemizer==3.2.1
-pip install torchaudio==2.0.2 #throws error. still works
+pip install torchaudio==2.0.2 #tries to install xformers 0.25. ignore the error
 pip install datasets==2.16.0
 pip install torchmetrics==0.11.1
+pip install xformers==0.0.20 # this is new
 pip install openai-whisper
 apt-get install ffmpeg # if you don't already have ffmpeg installed
 apt-get install espeak-ng # backend for the phonemizer installed below
