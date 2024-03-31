@@ -71,7 +71,7 @@ def transcribe_btn_click(model_choice, audio_choice, transcribed_text):
         print("mfa.cvs file exists already")
     else:
         print(align_temp + " is None")
-        os.system(f"mfa align -j 1 --output_format csv {temp_folder} english_us_arpa english_us_arpa {align_temp}")
+        os.system(f"mfa align -j 1 --output_format csv --clean {temp_folder} english_us_arpa english_us_arpa {align_temp}")
 
     # if the above fails, it could be because the audio is too hard for the alignment model, increasing the beam size usually solves the issue
     # or try a larger model
