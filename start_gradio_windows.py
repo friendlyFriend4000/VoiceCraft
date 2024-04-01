@@ -1,4 +1,4 @@
-# Remember to instal whisperx https://github.com/m-bain/whisperX
+# Remember to install whisperx https://github.com/m-bain/whisperX
 import os
 from phonemizer.backend.espeak.wrapper import EspeakWrapper
 _ESPEAK_LIBRARY = 'C:\Program Files\eSpeak NG\libespeak-ng.dll'
