@@ -15,6 +15,7 @@ import time
 import gc
 import shutil
 import subprocess
+import GPUtil # pip install GPUtil
 
 
 audio_fn = ""
@@ -113,6 +114,13 @@ def transcribe_btn_click(model_choice, audio_choice, transcribed_text):
 
 def run(seed, stop_repetition, sample_batch_size, left_margin, right_margin, codec_audio_sr, codec_sr, top_k, top_p,
         temperature, kvcache, cutoff_value, target_transcript, silence_tokens):
+    # Cleanup memory at the beginning
+    torch.cuda.empty_cache()
+    gc.collect()
+    
+    # Get the GPU with the most available memory
+    gpus = GPUtil.getGPUs()
+    gpu = gpus[0]  # Assuming you want to use the first GPU
 
     # take a look at demo/temp/mfa_alignment, decide which part of the audio to use as prompt
     #cut_off_sec = cutoff_value  # NOTE: according to forced-alignment file, the word "common" stop as 3.01 sec, this should be different for different audio
@@ -163,23 +171,46 @@ def run(seed, stop_repetition, sample_batch_size, left_margin, right_margin, cod
                      'kvcache': kvcache, "codec_audio_sr": codec_audio_sr, "codec_sr": codec_sr,
                      "silence_tokens": silence_tokens, "sample_batch_size": sample_batch_size}
     from inference_tts_scale import inference_one_sample
-    concated_audio, gen_audio = inference_one_sample(model, ckpt["config"], ckpt['phn2num'], text_tokenizer, audio_tokenizer,
-                                                     audio_fn, target_transcript, device, decode_config,
-                                                     prompt_end_frame)
-
-    # save segments for comparison
-    concated_audio, gen_audio = concated_audio[0].cpu(), gen_audio[0].cpu()
-    torchaudio.save(f"gen.wav", gen_audio, 16000)
 
 
-    output_dir = "./demo/generated_tts"
-    os.makedirs(output_dir, exist_ok=True)
-    seg_save_fn_gen = f"{output_dir}/{os.path.basename(audio_fn)[:-4]}_gen_seed{seed}.wav"
-    seg_save_fn_concat = f"{output_dir}/{os.path.basename(audio_fn)[:-4]}_concat_seed{seed}.wav"
+    
+    # Monitor VRAM usage
+    while True:
+        # Get current VRAM usage
+        vram_usage = gpu.memoryUsed
+        total_vram = gpu.memoryTotal
+
+        # Check if VRAM usage exceeds a threshold (e.g., 90% of total VRAM)
+        print("Total VRAM: " +total_vram)
+        print("VRAM usage: " +vram_usage)
+        if vram_usage > 0.9 * total_vram:
+            print("VRAM usage is high. Taking appropriate actions...")
+            # Take actions to reduce VRAM usage, such as reducing batch size or clearing memory
+            sample_batch_size = max(1, sample_batch_size // 2)
+            torch.cuda.empty_cache()
+            gc.collect()
+
+        concated_audio, gen_audio = inference_one_sample(model, ckpt["config"], ckpt['phn2num'], text_tokenizer, audio_tokenizer,
+                                                        audio_fn, target_transcript, device, decode_config,
+                                                        prompt_end_frame)
 
 
-    torchaudio.save(seg_save_fn_gen, gen_audio, int(codec_audio_sr))
-    torchaudio.save(seg_save_fn_concat, concated_audio, int(codec_audio_sr))
+        # save segments for comparison
+        concated_audio, gen_audio = concated_audio[0].cpu(), gen_audio[0].cpu()
+        torchaudio.save(f"gen.wav", gen_audio, 16000)
+
+
+        output_dir = "./demo/generated_tts"
+        os.makedirs(output_dir, exist_ok=True)
+        seg_save_fn_gen = f"{output_dir}/{os.path.basename(audio_fn)[:-4]}_gen_seed{seed}.wav"
+        seg_save_fn_concat = f"{output_dir}/{os.path.basename(audio_fn)[:-4]}_concat_seed{seed}.wav"
+
+
+        torchaudio.save(seg_save_fn_gen, gen_audio, int(codec_audio_sr))
+        torchaudio.save(seg_save_fn_concat, concated_audio, int(codec_audio_sr))
+
+        # Break the loop if generation is successful
+        break
 
     return [seg_save_fn_concat, seg_save_fn_gen]
 
