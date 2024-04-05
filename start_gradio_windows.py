@@ -181,8 +181,8 @@ def run(seed, stop_repetition, sample_batch_size, left_margin, right_margin, cod
         total_vram = gpu.memoryTotal
 
         # Check if VRAM usage exceeds a threshold (e.g., 90% of total VRAM)
-        print("Total VRAM: " +total_vram)
-        print("VRAM usage: " +vram_usage)
+        print("Total VRAM: ", total_vram)
+        print("VRAM usage: ", vram_usage)
         if vram_usage > 0.9 * total_vram:
             print("VRAM usage is high. Taking appropriate actions...")
             # Take actions to reduce VRAM usage, such as reducing batch size or clearing memory
